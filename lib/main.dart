@@ -1,125 +1,777 @@
 import 'package:flutter/material.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
 
-  // This widget is the root of your application.
+class _MyAppState extends State<MyApp> {
+  bool isAuthenticated = false;
+  bool isAdmin = false;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: '',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primarySwatch: Colors.green,
+        inputDecorationTheme: InputDecorationTheme(
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.green),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.green),
+          ),
+          labelStyle: TextStyle(color: Colors.black),
+          prefixIconColor: Colors.green,
+        ),
+
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          selectedItemColor: Colors.green,
+          unselectedItemColor: Colors.green,
+          showUnselectedLabels: true,
+          showSelectedLabels: true,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+            padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 12.0),
+            textStyle: TextStyle(color: Colors.white), // Set button text color to white
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            backgroundColor: Colors.green,
+          // Set button text color to white
+          ),
+        ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => isAuthenticated
+            ? MainScreen(isAdmin: isAdmin)
+            : AuthScreen(onAuthenticated: (admin) {
+          setState(() {
+            isAuthenticated = true;
+            isAdmin = admin;
+          });
+          Navigator.pushReplacementNamed(context, '/main');
+        }),
+        '/login': (context) => LoginScreen(onAuthenticated: (admin) {
+          setState(() {
+            isAuthenticated = true;
+            isAdmin = admin;
+          });
+          Navigator.pushReplacementNamed(context, '/main');
+        }),
+        '/register': (context) => RegisterScreen(onAuthenticated: (admin) {
+          setState(() {
+            isAuthenticated = true;
+            isAdmin = admin;
+          });
+          Navigator.pushReplacementNamed(context, '/main');
+        }),
+        '/main': (context) => MainScreen(isAdmin: isAdmin),
+        '/search': (context) => SearchScreen(),
+        '/admin': (context) => isAuthenticated && isAdmin
+            ? AdminScreen()
+            : AuthScreen(onAuthenticated: (admin) {
+          setState(() {
+            isAuthenticated = true;
+            isAdmin = admin;
+          });
+          Navigator.pushReplacementNamed(context, '/main');
+        }),
+        '/addDrug': (context) => AddDrugScreen(),
+        '/editDrug': (context) => EditDrugScreen(),
+        '/deleteDrug': (context) => DeleteDrugScreen(),
+        '/scanner': (context) => QRViewExample(),
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class AuthScreen extends StatelessWidget {
+  final Function(bool) onAuthenticated;
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  AuthScreen({required this.onAuthenticated});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(''),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'images/logo.png',
+              height: 100,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/login');
+              },
+              child: Text('Connexion',
+                  style: TextStyle(color: Colors.white,
+                  ),
+
+              ),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/register');
+              },
+              child: Text('Inscription',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class LoginScreen extends StatelessWidget {
+  final Function(bool) onAuthenticated;
 
-  void _incrementCounter() {
+  LoginScreen({required this.onAuthenticated});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+            'Connexion',
+        ),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(100.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'images/logo.png',
+              height: 100,
+            ),
+            SizedBox(height: 20),
+            TextField(
+              decoration: InputDecoration(labelText: 'Email',
+                prefixIcon: Icon(Icons.email),
+              ),
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Mot de passe',
+                prefixIcon: Icon(Icons.lock),
+              ),
+              obscureText: true,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Assume authentication logic here
+                bool admin = true; // Placeholder logic
+                onAuthenticated(admin);
+              },
+              child: Text('Se connecter',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            SizedBox(height: 10),
+            TextButton(
+              onPressed: () {
+                // Logic to recover password
+              },
+              child: Text('Mot de passe oublié ?',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class RegisterScreen extends StatelessWidget {
+  final Function(bool) onAuthenticated;
+
+  RegisterScreen({required this.onAuthenticated});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Inscription'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'images/logo.png',
+              height: 100,
+            ),
+            SizedBox(height: 20),
+            TextField(
+
+              decoration: InputDecoration(labelText: 'Nom d\'utilisateur',
+                prefixIcon: Icon(Icons.person),
+              ),
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Email',
+                prefixIcon: Icon(Icons.email),
+              ),
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Mot de passe',
+                prefixIcon: Icon(Icons.lock),
+              ),
+              obscureText: true,
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Confirmer mot de passe',
+                prefixIcon: Icon(Icons.lock),
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Assume registration logic here
+                bool admin = false; // Placeholder logic
+                onAuthenticated(admin);
+              },
+              child: Text('S\'inscrire',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class MainScreen extends StatefulWidget {
+  final bool isAdmin;
+
+  MainScreen({required this.isAdmin});
+
+  @override
+  _MainScreenState createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  int _selectedIndex = 0;
+  static List<Widget> _widgetOptions = <Widget>[
+    HomeScreen(),
+    SearchScreen(),
+    QRViewExample(),
+    AdminScreen(),
+  ];
+
+  void _onItemTapped(int index) {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _selectedIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text('Medi Auth'),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+        child: _widgetOptions.elementAt(_selectedIndex),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Accueil',
+
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Recherche',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.qr_code_scanner),
+            label: 'Scanner',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.admin_panel_settings),
+            label: 'Admin',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.green,
+        unselectedItemColor: Colors.green,
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+}
+
+
+class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(''),
+        centerTitle: true,
+        elevation: 0, // Supprime l'ombre de l'app bar
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+          children: [
+            // Logo en haut du titre
+            Image.asset(
+              'images/logo.png',
+              height: 120,
+              width: 120,
             ),
+            SizedBox(height: 20),
+
+            // Titre accrocheur
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              'Authentifiez vos Médicaments avec Confiance',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                letterSpacing: 1.2,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 16),
+
+            // Sous-titre
+            Text(
+              'Prévenez la vente de médicaments contrefaits en scannant les codes-barres.',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.black87,
+                fontStyle: FontStyle.italic,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 32),
+
+            // Présentation du fonctionnement
+            Text(
+              'Scannez le code-barres de votre médicament pour vérifier son authenticité instantanément.',
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.black54,
+                fontWeight: FontWeight.w400,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 24),
+
+            // Illustration avec images
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    Image.asset(
+                      'images/scann.png',
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Scannez',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(width: 40),
+                Column(
+                  children: [
+                    Image.asset(
+                      'images/chek.jpeg',
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Vérifiez',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class SearchScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Recherche de Médicaments',
+        ),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Entrez le nom ou le code du médicament',
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Logic for searching
+              },
+              child: Text('Rechercher',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class QRViewExample extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _QRViewExampleState();
+}
+
+class _QRViewExampleState extends State<QRViewExample> {
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  QRViewController? controller;
+  String barcode = '';
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    if (controller != null) {
+      controller!.pauseCamera();
+    }
+    controller?.resumeCamera();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Scanner le code-barres'),
+      ),
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            flex: 4,
+            child: QRView(
+              key: qrKey,
+              onQRViewCreated: _onQRViewCreated,
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Center(
+              child: Text('Résultat du scan: $barcode'),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  void _onQRViewCreated(QRViewController controller) {
+    this.controller = controller;
+    controller.scannedDataStream.listen((scanData) {
+      setState(() {
+        barcode = scanData.code!;
+        fetchDrugDetails(barcode);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    controller?.dispose();
+    super.dispose();
+  }
+
+  void fetchDrugDetails(String barcode) {
+    // Logic to get drug details using the scanned barcode
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DrugDetailScreen(
+          drugName: "Aspirin",
+          expiryDate: "2025-12-31",
+          manufacturer: "Pharma Inc.",
+          isAuthentic: true,
+        ),
+      ),
+    );
+  }
+}
+
+class DrugDetailScreen extends StatelessWidget {
+  final String drugName;
+  final String expiryDate;
+  final String manufacturer;
+  final bool isAuthentic;
+
+  DrugDetailScreen({
+    required this.drugName,
+    required this.expiryDate,
+    required this.manufacturer,
+    required this.isAuthentic,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Détails du Médicament'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Nom : $drugName', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 10),
+            Text('Date d\'expiration : $expiryDate', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 10),
+            Text('Fabricant : $manufacturer', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 10),
+            Text(
+              isAuthentic ? 'Authentique' : 'Contrefait',
+              style: TextStyle(
+                fontSize: 18,
+                color: isAuthentic ? Colors.green : Colors.red,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AdminScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Admin - Gestion des Médicaments'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Tableau de bord',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildDashboardTile(Icons.medical_services, 'Médicaments Vérifiés',''),
+                _buildDashboardTile(Icons.add, 'Médicaments Ajoutés',''),
+                _buildDashboardTile(Icons.edit, 'Médicaments Modifiés',''),
+                _buildDashboardTile(Icons.delete, 'Médicaments Supprimés',''),
+              ],
+            ),
+            SizedBox(height: 24),
+            Text(
+              'Actions',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            _buildActionTile(context, Icons.add, 'Ajouter Médicament', '/addDrug'),
+            _buildActionTile(context, Icons.edit, 'Modifier Médicament', '/editDrug'),
+            _buildActionTile(context, Icons.delete, 'Supprimer Médicament', '/deleteDrug'),
+            _buildActionTile(context, Icons.medical_services, 'Verifier Médicament', '/verifieDrug'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDashboardTile(IconData icon, String label, String count) {
+    return Column(
+      children: [
+        Icon(icon, size: 40, color: Colors.green),
+        SizedBox(height: 8),
+        Text(label, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(count, style: TextStyle(fontSize: 16)),
+      ],
+    );
+  }
+
+  Widget _buildActionTile(BuildContext context, IconData icon, String label, String route) {
+    return ListTile(
+      leading: Icon(icon, size: 40, color: Colors.green),
+      title: Text(label, style: TextStyle(fontSize: 18)),
+      trailing: Icon(Icons.arrow_forward_ios, color: Colors.green),
+      onTap: () {
+        Navigator.pushNamed(context, route);
+      },
+    );
+  }
+}
+
+class AddDrugScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Ajouter Médicament'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              decoration: InputDecoration(labelText: 'Nom du médicament'),
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Code-barres du medicament'),
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Fabricant'),
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Date de fabrication'),
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Date d\'expiration'),
+            ),
+
+            TextField(
+              decoration: InputDecoration(labelText: 'Description'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Logic to add a drug
+              },
+              child: Text('Ajouter',
+                style: TextStyle(color: Colors.white),),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class EditDrugScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Modifier Médicament'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              decoration: InputDecoration(labelText: 'Nom du médicament'),
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Code-barres du medicament'),
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Fabricant'),
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Date de fabrication'),
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Date d\'expiration'),
+            ),
+            TextField(
+              decoration: InputDecoration(labelText: 'Description'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Logic to edit a drug
+              },
+              child: Text('Modifier',
+                  style: TextStyle(color: Colors.white),
+            ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class DeleteDrugScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Supprimer Médicament'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              decoration: InputDecoration(labelText: 'Nom du médicament ou Code-barres du medicament'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Logic to delete a drug
+              },
+              child: Text('Supprimer',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
