@@ -113,9 +113,9 @@ class AuthScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'images/logo.png',
-              height: 100,
+              'images/logo.png', height: MediaQuery.of(context).size.height * 0.15,
             ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
@@ -155,22 +155,27 @@ class LoginScreen extends StatelessWidget {
         title: Text(
             'Connexion',
         ),
+        centerTitle: true,
+
       ),
       body: Padding(
-        padding: EdgeInsets.all(100.0),
+        padding: const EdgeInsets.only(bottom: 200.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+
             Image.asset(
               'images/logo.png',
-              height: 100,
+              height: MediaQuery.of(context).size.height * 0.15,
             ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
             SizedBox(height: 20),
             TextField(
               decoration: InputDecoration(labelText: 'Email',
                 prefixIcon: Icon(Icons.email),
               ),
             ),
+            SizedBox(height: 20),
             TextField(
               decoration: InputDecoration(labelText: 'Mot de passe',
                 prefixIcon: Icon(Icons.lock),
@@ -188,7 +193,8 @@ class LoginScreen extends StatelessWidget {
                 style: TextStyle(color: Colors.white),
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+
             TextButton(
               onPressed: () {
                 // Logic to recover password
@@ -197,6 +203,7 @@ class LoginScreen extends StatelessWidget {
                 style: TextStyle(color: Colors.white),
               ),
             ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.01),
           ],
         ),
       ),
@@ -214,16 +221,18 @@ class RegisterScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Inscription'),
+        centerTitle: true,
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(bottom: 150.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
               'images/logo.png',
-              height: 100,
+              height: MediaQuery.of(context).size.height * 0.15,
             ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
             SizedBox(height: 20),
             TextField(
 
@@ -231,23 +240,26 @@ class RegisterScreen extends StatelessWidget {
                 prefixIcon: Icon(Icons.person),
               ),
             ),
+            SizedBox(height: 20),
             TextField(
               decoration: InputDecoration(labelText: 'Email',
                 prefixIcon: Icon(Icons.email),
               ),
             ),
+            SizedBox(height: 20),
             TextField(
               decoration: InputDecoration(labelText: 'Mot de passe',
                 prefixIcon: Icon(Icons.lock),
               ),
               obscureText: true,
             ),
+            SizedBox(height: 20),
             TextField(
               decoration: InputDecoration(labelText: 'Confirmer mot de passe',
                 prefixIcon: Icon(Icons.lock),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.01),
             ElevatedButton(
               onPressed: () {
                 // Assume registration logic here
@@ -293,7 +305,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Medi Auth'),
+        title: Text(''),
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
@@ -345,10 +357,10 @@ class HomeScreen extends StatelessWidget {
             // Logo en haut du titre
             Image.asset(
               'images/logo.png',
-              height: 120,
-              width: 120,
+              height: MediaQuery.of(context).size.height * 0.15,
             ),
-            SizedBox(height: 20),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+            //SizedBox(height: 20),
 
             // Titre accrocheur
             Text(
@@ -395,9 +407,10 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     Image.asset(
                       'images/scann.png',
-                      height: 100,
-                      width: 100,
-                      fit: BoxFit.cover,
+                      width: MediaQuery.of(context).size.width * 0.2, // 50% de la largeur de l'écran
+                      height: MediaQuery.of(context).size.height * 0.2, // 30% de la hauteur de l'écran
+                      fit: BoxFit.contain,
+                      //fit: BoxFit.cover,
                     ),
                     SizedBox(height: 8),
                     Text(
@@ -414,9 +427,10 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     Image.asset(
                       'images/chek.jpeg',
-                      height: 100,
-                      width: 100,
-                      fit: BoxFit.cover,
+                      width: MediaQuery.of(context).size.width * 0.2, // 50% de la largeur de l'écran
+                      height: MediaQuery.of(context).size.height * 0.2, // 30% de la hauteur de l'écran
+                      fit: BoxFit.contain,
+                      //fit: BoxFit.cover,
                     ),
                     SizedBox(height: 8),
                     Text(
@@ -444,7 +458,9 @@ class SearchScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Recherche de Médicaments',
         ),
+        centerTitle: true,
       ),
+
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
@@ -494,6 +510,7 @@ class _QRViewExampleState extends State<QRViewExample> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Scanner le code-barres'),
+        centerTitle: true,
       ),
       body: Column(
         children: <Widget>[
@@ -622,7 +639,7 @@ class AdminScreen extends StatelessWidget {
               'Actions',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.01),
             _buildActionTile(context, Icons.add, 'Ajouter Médicament', '/addDrug'),
             _buildActionTile(context, Icons.edit, 'Modifier Médicament', '/editDrug'),
             _buildActionTile(context, Icons.delete, 'Supprimer Médicament', '/deleteDrug'),
@@ -661,7 +678,8 @@ class AddDrugScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ajouter Médicament'),
+        title: Text('Ajouter un Médicament'),
+        centerTitle: true,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -670,19 +688,23 @@ class AddDrugScreen extends StatelessWidget {
             TextField(
               decoration: InputDecoration(labelText: 'Nom du médicament'),
             ),
+            SizedBox(height: 20),
             TextField(
               decoration: InputDecoration(labelText: 'Code-barres du medicament'),
             ),
+            SizedBox(height: 20),
             TextField(
               decoration: InputDecoration(labelText: 'Fabricant'),
             ),
+            SizedBox(height: 20),
             TextField(
               decoration: InputDecoration(labelText: 'Date de fabrication'),
             ),
+            SizedBox(height: 20),
             TextField(
               decoration: InputDecoration(labelText: 'Date d\'expiration'),
             ),
-
+            SizedBox(height: 20),
             TextField(
               decoration: InputDecoration(labelText: 'Description'),
             ),
@@ -706,7 +728,8 @@ class EditDrugScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Modifier Médicament'),
+        title: Text('Modifier un Médicament'),
+        centerTitle: true,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -715,21 +738,26 @@ class EditDrugScreen extends StatelessWidget {
             TextField(
               decoration: InputDecoration(labelText: 'Nom du médicament'),
             ),
+            SizedBox(height: 20),
             TextField(
               decoration: InputDecoration(labelText: 'Code-barres du medicament'),
             ),
+            SizedBox(height: 20),
             TextField(
               decoration: InputDecoration(labelText: 'Fabricant'),
             ),
+            SizedBox(height: 20),
             TextField(
               decoration: InputDecoration(labelText: 'Date de fabrication'),
             ),
+            SizedBox(height: 20),
             TextField(
               decoration: InputDecoration(labelText: 'Date d\'expiration'),
             ),
             TextField(
               decoration: InputDecoration(labelText: 'Description'),
             ),
+
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
@@ -751,7 +779,8 @@ class DeleteDrugScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Supprimer Médicament'),
+        title: Text('Supprimer un  Médicament'),
+        centerTitle: true,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
