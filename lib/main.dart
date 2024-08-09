@@ -115,7 +115,7 @@ class AuthScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'images/logo.png', height: MediaQuery.of(context).size.height * 0.15,
+              'assets/images/logo.png', height: MediaQuery.of(context).size.height * 0.15,
             ),
             SizedBox(height: MediaQuery.of(context).size.height * 0.02),
             SizedBox(height: 20),
@@ -163,7 +163,7 @@ class LoginScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'images/logo.png',
+              'assets/images/logo.png',
               height: MediaQuery.of(context).size.height * 0.15,
             ),
             SizedBox(height: MediaQuery.of(context).size.height * 0.02),
@@ -377,7 +377,7 @@ class HomeScreen extends StatelessWidget {
             children: [
               // Logo en haut du titre
               Image.asset(
-                'images/logo.png',
+                'assets/images/logo.png',
                 height: 100,  // Taille fixe pour éviter les problèmes de mise en page
                 fit: BoxFit.contain,
               ),
@@ -426,7 +426,7 @@ class HomeScreen extends StatelessWidget {
                   Column(
                     children: [
                       Image.asset(
-                        'images/scann.png',
+                        'assets/images/scann.png',
                         width: 80,  // Taille fixe
                         height: 80, // Taille fixe
                         fit: BoxFit.contain,
@@ -445,7 +445,7 @@ class HomeScreen extends StatelessWidget {
                   Column(
                     children: [
                       Image.asset(
-                        'images/chek.jpeg',
+                        'assets/images/chek.jpeg',
                         width: 80,  // Taille fixe
                         height: 80, // Taille fixe
                         fit: BoxFit.contain,
